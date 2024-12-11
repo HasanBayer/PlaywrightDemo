@@ -28,6 +28,11 @@ namespace PlaywrightDemo
             await page.GetByTestId("login-password").FillAsync("123456789");
             await page.GetByRole(AriaRole.Button, new() { Name = "Login" }).ClickAsync();
 
+            //Login control
+            var locator = page.Locator(".fa-user").First;
+            await Assertions.Expect(page.Locator("ul > li")).ToContainTextAsync(new string[]{ "Logged in as" });
+            await page.CloseAsync();
+
 
 
 
