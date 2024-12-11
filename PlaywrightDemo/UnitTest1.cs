@@ -37,5 +37,58 @@ namespace PlaywrightDemo
 
 
         }
+
+        [Test]
+        public async Task Test2()
+        {
+            // Create Playwright instance
+            using var playwright = await Playwright.CreateAsync();
+
+            // Launch browser with specified options
+            await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+            {
+                Headless = false,
+                SlowMo = 50,
+                Timeout = 80000
+            });
+
+            // Create a new browser context
+            var context = await browser.NewContextAsync();
+
+            // Create a new page
+            var page = await context.NewPageAsync();
+
+            // Navigate to the URL
+            const string url = "https://www.automationexercise.com/";
+            await page.GotoAsync(url);
+
+            // Click on the login button
+            await page.ClickAsync(".fa-lock");
+
+            // Set the attribute for locating test elements
+            playwright.Selectors.SetTestIdAttribute("data-qa");
+
+            // Fill in the login form
+            const string email = "abc123@hotmail.com";
+            const string password = "123456789";
+            await page.GetByTestId("login-email").FillAsync(email);
+            await page.GetByTestId("login-password").FillAsync(password);
+
+            // Click the login button
+            await page.GetByRole(AriaRole.Button, new() { Name = "Login" }).ClickAsync();
+
+            // Verify login success
+            var loggedInUserLocator = page.Locator(".fa-user").First;
+            await Assertions.Expect(loggedInUserLocator).ToBeVisibleAsync();
+
+            // Ensure the "Logged in as" text is present
+            var menuItemsLocator = page.Locator("ul > li");
+            await Assertions.Expect(menuItemsLocator).ToContainTextAsync(new[] { "Logged in as" });
+
+            // Close the page
+            await page.CloseAsync();
+        }
     }
+
+
 }
