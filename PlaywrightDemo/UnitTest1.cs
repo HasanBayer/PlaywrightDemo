@@ -4,6 +4,88 @@ using System.Text.RegularExpressions;
 
 namespace PlaywrightDemo
 {
+    [TestFixture]
+    public class AutomationExerciseTests
+    {
+        private IPlaywright _playwright;
+        private IBrowser _browser;
+        private IBrowserContext _context;
+
+        [SetUp]
+        public async Task Setup()
+        {
+            _playwright = await Playwright.CreateAsync();
+            _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+            {
+                Headless = false,
+                SlowMo = 50
+            });
+            _context = await _browser.NewContextAsync();
+            _playwright.Selectors.SetTestIdAttribute("data-qa"); // Test ID tanýmý burada yapýlýyor.
+        }
+
+        [TearDown]
+        public async Task Teardown()
+        {
+            await _context.CloseAsync();
+            await _browser.CloseAsync();
+            _playwright.Dispose();
+        }
+
+        public async Task<IPage> LoginAsync()
+        {
+            var page = await _context.NewPageAsync();
+            await page.GotoAsync("https://www.automationexercise.com/");
+            await page.ClickAsync(".fa-lock");
+
+            // Login formunu doldur ve giriþ yap
+            await page.GetByTestId("login-email").FillAsync("abc123@hotmail.com");
+            await page.GetByTestId("login-password").FillAsync("123456789");
+            await page.GetByRole(AriaRole.Button, new() { Name = "Login" }).ClickAsync();
+
+            return page;
+        }
+
+        [Test]
+        public async Task VerifyLogin()
+        {
+            var page = await LoginAsync();
+
+            // Login doðrulamasý
+            await Assertions.Expect(page.Locator(".fa-user").First).ToBeVisibleAsync();
+            await Assertions.Expect(page.Locator("ul > li")).ToContainTextAsync(new[] { "Logged in as" });
+
+            await page.CloseAsync();
+        }
+
+        [Test]
+        public async Task LogoutAfterLogin()
+        {
+            var page = await LoginAsync();
+
+            // Logout iþlemini gerçekleþtir
+            await page.ClickAsync("a[href='/logout']");
+            await Assertions.Expect(page.Locator(".fa-lock")).ToBeVisibleAsync();
+
+            await page.CloseAsync();
+        }
+
+        //[Test]
+        //public async Task AddItemToCart()
+        //{
+        //    var page = await LoginAsync();
+
+        //    // Bir ürünü sepete ekle
+        //    await page.ClickAsync("a[href='/products/1']"); // Örnek ürün sayfasý
+        //    await page.ClickAsync("button[data-qa='add-to-cart']");
+
+        //    // Sepet doðrulamasý
+        //    await page.ClickAsync("a[href='/view_cart']");
+        //    await Assertions.Expect(page.Locator("div.cart-item")).ToBeVisibleAsync();
+
+        //    await page.CloseAsync();
+        //}
+    }
     public class Tests
     {
         [SetUp]
@@ -16,12 +98,12 @@ namespace PlaywrightDemo
         {
             using var playwright = await Playwright.CreateAsync();
             await using var browser = await playwright.Chromium.LaunchAsync(
-                new BrowserTypeLaunchOptions { Headless=false, SlowMo=50, Timeout=80000} 
+                new BrowserTypeLaunchOptions { Headless = false, SlowMo = 50, Timeout = 80000 }
             );
             var context = await browser.NewContextAsync();
             var page = await context.NewPageAsync();
 
-            await page.GotoAsync(url: "https://www.automationexercise.com/");            
+            await page.GotoAsync(url: "https://www.automationexercise.com/");
             await page.ClickAsync(".fa-lock");
             playwright.Selectors.SetTestIdAttribute("data-qa");
             await page.GetByTestId("login-email").FillAsync("abc123@hotmail.com");
@@ -30,7 +112,7 @@ namespace PlaywrightDemo
 
             //Login control
             var locator = page.Locator(".fa-user").First;
-            await Assertions.Expect(page.Locator("ul > li")).ToContainTextAsync(new string[]{ "Logged in as" });
+            await Assertions.Expect(page.Locator("ul > li")).ToContainTextAsync(new string[] { "Logged in as" });
             await page.CloseAsync();
 
 
@@ -92,78 +174,86 @@ namespace PlaywrightDemo
         [Test]
         public async Task Test3()
         {
-                // List of browsers to test
-                var browserTypes = new[] { "chromium", "firefox", "webkit" };
+            // List of browsers to test
+            var browserTypes = new[] { "chromium", "firefox", "webkit" };
 
-                foreach (var browserType in browserTypes)
+            foreach (var browserType in browserTypes)
+            {
+                // Create Playwright instance
+                using var playwright = await Playwright.CreateAsync();
+
+                // Launch the appropriate browser
+                IBrowser browser = browserType switch
                 {
-                    // Create Playwright instance
-                    using var playwright = await Playwright.CreateAsync();
-
-                    // Launch the appropriate browser
-                    IBrowser browser = browserType switch
+                    "chromium" => await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
                     {
-                        "chromium" => await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-                        {
-                            Headless = false,
-                            SlowMo = 50,
-                            Timeout = 80000
-                        }),
-                        "firefox" => await playwright.Firefox.LaunchAsync(new BrowserTypeLaunchOptions
-                        {
-                            Headless = false,
-                            SlowMo = 50,
-                            Timeout = 80000
-                        }),
-                        "webkit" => await playwright.Webkit.LaunchAsync(new BrowserTypeLaunchOptions
-                        {
-                            Headless = false,
-                            SlowMo = 50,
-                            Timeout = 80000
-                        }),
-                        _ => throw new NotSupportedException($"Browser type {browserType} is not supported")
-                    };
+                        Headless = false,
+                        SlowMo = 50,
+                        Timeout = 80000
+                    }),
+                    "firefox" => await playwright.Firefox.LaunchAsync(new BrowserTypeLaunchOptions
+                    {
+                        Headless = false,
+                        SlowMo = 50,
+                        Timeout = 80000
+                    }),
+                    "webkit" => await playwright.Webkit.LaunchAsync(new BrowserTypeLaunchOptions
+                    {
+                        Headless = false,
+                        SlowMo = 50,
+                        Timeout = 80000
+                    }),
+                    _ => throw new NotSupportedException($"Browser type {browserType} is not supported")
+                };
 
-                    // Create a new browser context
-                    var context = await browser.NewContextAsync();
+                // Create a new browser context
+                var context = await browser.NewContextAsync();
 
-                    // Create a new page
-                    var page = await context.NewPageAsync();
+                // Create a new page
+                var page = await context.NewPageAsync();
 
-                    // Navigate to the URL
-                    const string url = "https://www.automationexercise.com/";
-                    await page.GotoAsync(url);
+                // Navigate to the URL
+                const string url = "https://www.automationexercise.com/";
+                await page.GotoAsync(url);
 
-                    // Click on the login button
-                    await page.ClickAsync(".fa-lock");
+                // Click on the login button
+                await page.ClickAsync(".fa-lock");
 
-                    // Set the attribute for locating test elements
-                    playwright.Selectors.SetTestIdAttribute("data-qa");
+                // Set the attribute for locating test elements
+                playwright.Selectors.SetTestIdAttribute("data-qa");
 
-                    // Fill in the login form
-                    const string email = "abc123@hotmail.com";
-                    const string password = "123456789";
-                    await page.GetByTestId("login-email").FillAsync(email);
-                    await page.GetByTestId("login-password").FillAsync(password);
+                // Fill in the login form
+                const string email = "abc123@hotmail.com";
+                const string password = "123456789";
+                await page.GetByTestId("login-email").FillAsync(email);
+                await page.GetByTestId("login-password").FillAsync(password);
 
-                    // Click the login button
-                    await page.GetByRole(AriaRole.Button, new() { Name = "Login" }).ClickAsync();
+                // Click the login button
+                await page.GetByRole(AriaRole.Button, new() { Name = "Login" }).ClickAsync();
 
-                    // Verify login success
-                    var loggedInUserLocator = page.Locator(".fa-user").First;
-                    await Assertions.Expect(loggedInUserLocator).ToBeVisibleAsync();
+                // Verify login success
+                var loggedInUserLocator = page.Locator(".fa-user").First;
+                await Assertions.Expect(loggedInUserLocator).ToBeVisibleAsync();
 
-                    // Ensure the "Logged in as" text is present
-                    var menuItemsLocator = page.Locator("ul > li");
-                    await Assertions.Expect(menuItemsLocator).ToContainTextAsync(new[] { "Logged in as" });
+                // Ensure the "Logged in as" text is present
+                var menuItemsLocator = page.Locator("ul > li");
+                await Assertions.Expect(menuItemsLocator).ToContainTextAsync(new[] { "Logged in as" });
 
-                    // Close the page
-                    await page.CloseAsync();
+                // Close the page
+                await page.CloseAsync();
 
-                    // Close the browser
-                    await browser.CloseAsync();
-                }
+                // Close the browser
+                await browser.CloseAsync();
             }
         }
 
+
+
+     
+
+
+
+
     }
+
+}
