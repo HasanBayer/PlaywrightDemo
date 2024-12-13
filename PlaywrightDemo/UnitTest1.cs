@@ -1,5 +1,6 @@
-using Microsoft.Playwright;
+ï»¿using Microsoft.Playwright;
 using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace PlaywrightDemo
@@ -21,7 +22,7 @@ namespace PlaywrightDemo
                 SlowMo = 50
             });
             _context = await _browser.NewContextAsync();
-            _playwright.Selectors.SetTestIdAttribute("data-qa"); // Test ID tanýmý burada yapýlýyor.
+            _playwright.Selectors.SetTestIdAttribute("data-qa"); // Test ID tanÄ±mÄ± burada yapÄ±lÄ±yor.
         }
 
         [TearDown]
@@ -38,7 +39,7 @@ namespace PlaywrightDemo
             await page.GotoAsync("https://www.automationexercise.com/");
             await page.ClickAsync(".fa-lock");
 
-            // Login formunu doldur ve giriþ yap
+            // Login formunu doldur ve giriÅŸ yap
             await page.GetByTestId("login-email").FillAsync("abc123@hotmail.com");
             await page.GetByTestId("login-password").FillAsync("123456789");
             await page.GetByRole(AriaRole.Button, new() { Name = "Login" }).ClickAsync();
@@ -51,7 +52,7 @@ namespace PlaywrightDemo
         {
             var page = await LoginAsync();
 
-            // Login doðrulamasý
+            // Login doÄŸrulamasÄ±
             await Assertions.Expect(page.Locator(".fa-user").First).ToBeVisibleAsync();
             await Assertions.Expect(page.Locator("ul > li")).ToContainTextAsync(new[] { "Logged in as" });
 
@@ -63,28 +64,26 @@ namespace PlaywrightDemo
         {
             var page = await LoginAsync();
 
-            // Logout iþlemini gerçekleþtir
+            // Logout iÅŸlemini gerÃ§ekleÅŸtir
             await page.ClickAsync("a[href='/logout']");
             await Assertions.Expect(page.Locator(".fa-lock")).ToBeVisibleAsync();
 
             await page.CloseAsync();
         }
 
-        //[Test]
-        //public async Task AddItemToCart()
-        //{
-        //    var page = await LoginAsync();
+        [Test]
+        public async Task AddItemToCart()
+        {           
+            var page = await LoginAsync();
+            await page.GetByRole(AriaRole.Link, new() { Name = "î£¸ Products" }).ClickAsync();
+            await page.Locator(".productinfo > .btn").First.ClickAsync();
+            await page.GetByRole(AriaRole.Link, new() { Name = "View Cart" }).ClickAsync();
+        }
 
-        //    // Bir ürünü sepete ekle
-        //    await page.ClickAsync("a[href='/products/1']"); // Örnek ürün sayfasý
-        //    await page.ClickAsync("button[data-qa='add-to-cart']");
 
-        //    // Sepet doðrulamasý
-        //    await page.ClickAsync("a[href='/view_cart']");
-        //    await Assertions.Expect(page.Locator("div.cart-item")).ToBeVisibleAsync();
 
-        //    await page.CloseAsync();
-        //}
+
+        
     }
     public class Tests
     {
@@ -249,7 +248,7 @@ namespace PlaywrightDemo
 
 
 
-     
+
 
 
 
