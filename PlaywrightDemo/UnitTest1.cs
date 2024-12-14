@@ -78,6 +78,7 @@ namespace PlaywrightDemo
             await page.GetByRole(AriaRole.Link, new() { Name = " Products" }).ClickAsync();
             await page.Locator(".productinfo > .btn").First.ClickAsync();
             await page.GetByRole(AriaRole.Link, new() { Name = "View Cart" }).ClickAsync();
+            await page.CloseAsync();
         }
 
 
@@ -244,6 +245,59 @@ namespace PlaywrightDemo
                 // Close the browser
                 await browser.CloseAsync();
             }
+        }
+
+        [Test]
+        public async Task Test4()
+        {
+            using var playwright = await Playwright.CreateAsync();
+            await using var browser = await playwright.Chromium.LaunchAsync(
+                new BrowserTypeLaunchOptions { Headless = false, SlowMo = 50, Timeout = 80000 }
+            );
+            var context = await browser.NewContextAsync();
+
+            await context.Tracing.StartAsync(new()
+            {
+                Screenshots = true,
+                Snapshots = true,
+                Sources = true,
+            });
+            var page = await context.NewPageAsync();
+            await page.SetViewportSizeAsync(1920, 1080);
+
+            // Navigate to the URL
+            const string url = "https://www.automationexercise.com/";
+            await page.GotoAsync(url);
+
+            // Click on the login button
+            await page.ClickAsync(".fa-lock");
+
+            // Set the attribute for locating test elements
+            playwright.Selectors.SetTestIdAttribute("data-qa");
+
+            // Fill in the login form
+            const string email = "abc123@hotmail.com";
+            const string password = "123456789";
+            await page.GetByTestId("login-email").FillAsync(email);
+            await page.GetByTestId("login-password").FillAsync(password);
+
+            // Click the login button
+            await page.GetByRole(AriaRole.Button, new() { Name = "Login" }).ClickAsync();
+
+            // Verify login success
+            var loggedInUserLocator = page.Locator(".fa-user").First;
+            await Assertions.Expect(loggedInUserLocator).ToBeVisibleAsync();
+
+            // Ensure the "Logged in as" text is present
+            var menuItemsLocator = page.Locator("ul > li");
+            await Assertions.Expect(menuItemsLocator).ToContainTextAsync(new[] { "Logged in as" });
+
+            await context.Tracing.StopAsync(new()
+            {
+                Path = "trace/trace.zip"
+            });
+            await context.CloseAsync();
+            await browser.CloseAsync();
         }
 
 
