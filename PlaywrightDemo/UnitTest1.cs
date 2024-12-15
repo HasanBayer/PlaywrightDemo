@@ -300,12 +300,53 @@ namespace PlaywrightDemo
             await browser.CloseAsync();
         }
 
+        [Test]
+        public async Task Test5()
+        {
+            using var playwright = await Playwright.CreateAsync();
+            await using var browser = await playwright.Chromium.LaunchAsync(
+                new BrowserTypeLaunchOptions { Headless = false, SlowMo = 50, Timeout = 80000 }
+            );
+            var context = await browser.NewContextAsync();
 
+            var page = await context.NewPageAsync();
 
+            const string url = "https://www.automationexercise.com/";
+            await page.GotoAsync(url);
+            await page.ClickAsync(".fa-lock");
+            playwright.Selectors.SetTestIdAttribute("data-qa");
+            const string email = "abc123@hotmail.com";
+            const string password = "123456789";
+            await page.GetByTestId("login-email").FillAsync(email);
+            await page.GetByTestId("login-password").FillAsync(password);
+            await page.GetByRole(AriaRole.Button, new() { Name = "Login" }).ClickAsync();
 
+            await context.StorageStateAsync(new()
+            {
+                Path = @"state\state_login.json"
+            });
 
+            await context.CloseAsync();
+            await browser.CloseAsync();
+        }
 
-
+        [Test]
+        public async Task Test6()
+        {
+            using var playwright = await Playwright.CreateAsync();
+            await using var browser = await playwright.Chromium.LaunchAsync(
+                new BrowserTypeLaunchOptions { Headless = false, SlowMo = 50, Timeout = 80000 }
+            );
+            var context = await browser.NewContextAsync(new()
+            {
+                StorageStatePath = @"state\state_login.json"
+            });
+            var page = await context.NewPageAsync();
+            Thread.Sleep(3000);
+            await page.GotoAsync("https://www.automationexercise.com/test_cases");
+            await context.CloseAsync();
+            await browser.CloseAsync();
+        }
 
     }
 
