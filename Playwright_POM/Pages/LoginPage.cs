@@ -1,10 +1,9 @@
 ﻿using Microsoft.Playwright;
-using System.Threading.Tasks;
-using Utils;
+using Utilities;
 
 namespace Pages
 {
-    public class LoginPage:PageTest
+    public class LoginPage : BaseTest
     {
         private readonly IPage _page;
 
