@@ -9,15 +9,18 @@ namespace Playwright_POM.Pages
 {
     public class AccountCreatedPage
     {
-        private readonly IPage _page;
-        private const string AccountCreatedText = "//b[contains(text(),'Account Created!')]";
-        private const string ContinueButton = "a:has-text('Continue')";
-
         public AccountCreatedPage(IPage page)
         {
             _page = page;
         }
 
+
+        //Locators
+        private readonly IPage _page;
+        private const string AccountCreatedText = "//b[contains(text(),'Account Created!')]";
+        private const string ContinueButton = "a:has-text('Continue')";
+             
+        //Actions
         public async Task VerifyAccountCreatedVisibleAsync()
         {
             var isVisible = await _page.Locator(AccountCreatedText).IsVisibleAsync();

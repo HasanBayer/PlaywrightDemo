@@ -3,6 +3,12 @@
 public class ProductsPage
 {
     private readonly IPage _page;
+    public ProductsPage(IPage page)
+    {
+        _page = page;
+    }
+
+    //Locators
     private ILocator ProductList => _page.Locator(".features_items");
     private ILocator FirstProductViewButton(string productId) => _page.Locator($"a[href='/product_details/{productId}']");
     private ILocator ProductName => _page.Locator(".product-information > h2");
@@ -12,21 +18,15 @@ public class ProductsPage
     private ILocator Condition => _page.Locator("//b[contains(text(),'Condition')]");
     private ILocator Brand => _page.Locator("//b[contains(text(),'Brand')]");
 
-    public ProductsPage(IPage page)
-    {
-        _page = page;
-    }
-
+    //Actions
     public async Task<bool> IsAllProductsPageVisibleAsync()
     {
         return await _page.Locator("h2.title:has-text('All Products')").IsVisibleAsync();
     }
-
     public async Task<bool> IsProductListVisibleAsync()
     {
         return await ProductList.IsVisibleAsync();
     }
-
     public async Task ClickFirstProductViewButtonAsync(string productId)
     {
         await FirstProductViewButton(productId).ClickAsync();

@@ -6,14 +6,12 @@ namespace Pages
     public class LoginPage
     {
         private readonly IPage _page;
-
-        // Constructor
         public LoginPage(IPage page)
         {
             _page = page;
         }
 
-        // Selectors
+        // Locators
         private ILocator LoginButton => _page.Locator(".fa-lock");
         private ILocator EmailInput => _page.Locator("[data-qa='login-email']");
         private ILocator PasswordInput => _page.Locator("[data-qa='login-password']");
@@ -31,14 +29,12 @@ namespace Pages
             await _page.GotoAsync(url);
             await LoginButton.ClickAsync();
         }
-
         public async Task PerformLoginAsync(string email, string password)
         {
             await EmailInput.FillAsync(email);
             await PasswordInput.FillAsync(password);
             await SubmitButton.ClickAsync();
         }
-
         public async Task<bool> IsLoggedInAsync()
         {
             await LoggedIcon.First.IsVisibleAsync();

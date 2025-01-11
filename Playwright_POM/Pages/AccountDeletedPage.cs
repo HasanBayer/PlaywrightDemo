@@ -9,15 +9,19 @@ namespace Playwright_POM.Pages
 {
     public class AccountDeletedPage
     {
-        private readonly IPage _page;
-        private const string AccountDeletedText = "//b[contains(text(),'Account Deleted!')]";
-        private const string ContinueButton = "a:has-text('Continue')";
 
+        private readonly IPage _page;
         public AccountDeletedPage(IPage page)
         {
             _page = page;
         }
 
+        //Locators
+        private const string AccountDeletedText = "//b[contains(text(),'Account Deleted!')]";
+        private const string ContinueButton = "a:has-text('Continue')";        
+
+
+        //Actions
         public async Task VerifyAccountDeletedVisibleAsync()
         {
             var isVisible = await _page.Locator(AccountDeletedText).IsVisibleAsync();

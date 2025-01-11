@@ -10,15 +10,17 @@ namespace Playwright_POM.Pages
     public class AccountPage
     {
         private readonly IPage _page;
-        private ILocator LoggedInAsUsername => _page.Locator("#header li:has-text('Logged in as')");
-        private ILocator DeleteAccountButton => _page.Locator("a[href='/delete_account']");
-        private ILocator AccountDeletedMessage => _page.Locator("h2:has-text('ACCOUNT DELETED!')");
-
         public AccountPage(IPage page)
         {
             _page = page;
         }
 
+        //Locators
+        private ILocator LoggedInAsUsername => _page.Locator("#header li:has-text('Logged in as')");
+        private ILocator DeleteAccountButton => _page.Locator("a[href='/delete_account']");
+        private ILocator AccountDeletedMessage => _page.Locator("h2:has-text('ACCOUNT DELETED!')");
+
+        //Actions
         public async Task<bool> IsLoggedInAsUsernameVisibleAsync()
         {
             return await LoggedInAsUsername.IsVisibleAsync();

@@ -10,7 +10,7 @@ namespace Playwright_POM.Tests
     public class CartTests : BaseTest
     {
         [Test]
-        public async Task AddOneProductToCartTest()
+        public async Task AddOneProductToCartTest() //Test Case 12: Add One Product in Cart
         {
             var loginPage = new LoginPage(_page);
             await loginPage.NavigateToLoginPageAsync("https://www.automationexercise.com/");
@@ -26,7 +26,7 @@ namespace Playwright_POM.Tests
         }
 
         [Test]
-        public async Task RegisterUserAsync()
+        public async Task RegisterUserAsync() //Test Case 1: Register New User
         {
             var homePage = new HomePage(_page);
             var signupPage = new SignupPage(_page);
@@ -63,15 +63,15 @@ namespace Playwright_POM.Tests
                 year: "2000",
                 subscribeNewsletter: true,
                 receiveOffers: true,
-                firstName: "Test",
-                lastName: "User",
+                firstName: "Hasan",
+                lastName: "Tester",
                 company: "TestCompany",
                 address1: "123 Test St",
-                country: "United States",
-                state: "TestState",
-                city: "TestCity",
+                country: "Canada",
+                state: "Quebec",
+                city: "Montreal",
                 zipcode: "12345",
-                mobileNumber: "+1234567890"
+                mobileNumber: "+123456789"
             );
 
             // Step 13: Click 'Create Account' button
@@ -82,9 +82,6 @@ namespace Playwright_POM.Tests
 
             // Step 15: Click 'Continue' button
             await accountCreatedPage.ClickContinueButtonAsync();
-
-            // Step 16: Verify that 'Logged in as username' is visible
-            // You can add verification here if needed.
 
             // Step 17: Click 'Delete Account' button
             await homePage.ClickDeleteAccountButtonAsync();

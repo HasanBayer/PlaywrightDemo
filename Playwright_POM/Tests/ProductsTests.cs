@@ -13,7 +13,7 @@ namespace Playwright_POM.Tests
     public class VerifyAllProductsTests : BaseTest
     {
         [Test]
-        public async Task VerifyAllProductsAndProductDetailPageTest()
+        public async Task VerifyAllProductsAndProductDetailPageTest() //Test Case 8: Verify All Products and product detail page
         {            
             // Initialize pages
             var productsPage = new ProductsPage(_page);

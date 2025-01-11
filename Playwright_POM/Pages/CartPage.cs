@@ -4,7 +4,12 @@ namespace Pages
 {
     public class CartPage
     {
-        private readonly IPage _page;
+        private readonly IPage _page;       
+
+        public CartPage(IPage page)
+        {
+            _page = page;
+        }
 
         // Locators
         private ILocator AddToCartButton => _page.Locator("button[class='btn btn-default cart']");
@@ -12,30 +17,22 @@ namespace Pages
         private ILocator ProceedToCheckoutButton => _page.Locator("a[href='/checkout']");
         private ILocator DeliveryAddress => _page.Locator(".address_delivery");
         private ILocator BillingAddress => _page.Locator(".address_invoice");
-
         private ILocator ProductLink(string productId) => _page.Locator($"a[href='/product_details/{productId}']");
 
-        public CartPage(IPage page)
-        {
-            _page = page;
-        }
-
+        //Actions
         public async Task NavigateToCartAsync()
         {
             await ViewCartButton.ClickAsync();
-        }
-      
+        }      
         public async Task<bool> IsProductInCartAsync(string productId)
         {
             return await _page.Locator($"tr[id='product-{productId}']").IsVisibleAsync();
         }
-
         public async Task AddOneProductToCartAsync(string productId)
         {
             // Click on the product link to navigate to the product details page
             await ProductLink(productId).ClickAsync();
 
-            // Click the Add to Cart button
             await AddToCartButton.ClickAsync();
         }
         public async Task AddProductToCartAsync()

@@ -5,6 +5,12 @@ namespace Playwright_POM.Pages
     public class AccountInformationPage 
     {
         private readonly IPage _page;
+        public AccountInformationPage(IPage page)
+        {
+            _page = page;
+        }
+
+        //Locators
         private const string EnterAccountInformationText = "//b[contains(text(),'Enter Account Information')]";
         private const string TitleRadioButton = "#id_gender1";
         private const string PasswordInput = "//*[@id=\'password\']";
@@ -24,11 +30,8 @@ namespace Playwright_POM.Pages
         private const string MobileNumberInput = "//*[@id='mobile_number']";
         private const string CreateAccountButton = "button:has-text('Create Account')";
 
-        public AccountInformationPage(IPage page)
-        {
-            _page = page;
-        }
-
+        
+        //Actions
         public async Task VerifyEnterAccountInformationVisibleAsync()
         {
             var isVisible = await _page.Locator(EnterAccountInformationText).IsVisibleAsync();
